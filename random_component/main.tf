@@ -13,22 +13,30 @@ resource "random_shuffle" "backend_type" {
 resource "local_file" "main" {
   filename = "${var.outputdir}/components/${random_pet.component.id}/main.tf"
   content = templatefile("${var.templatedir}/main.tftpl", { resource_count = random_integer.resource_count.result })
+
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/tf.sh \"${var.outputdir}/components/${random_pet.component.id}\""
+  }
 }
 
-resource "local_file" "backend" {
-  filename = "${var.outputdir}/components/${random_pet.component.id}/backend.tf"
-  content = templatefile(
-    "${var.templatedir}/backend.tftpl",
-    {
-      kind = random_shuffle.backend_type.result[0]
-      bucket = "terraform-${random_pet.component.id}-state"
-    }
-  )
-}
+# resource "local_file" "backend" {
+#   filename = "${var.outputdir}/components/${random_pet.component.id}/backend.tf"
+#   content = templatefile(
+#     "${var.templatedir}/backend.tftpl",
+#     {
+#       kind = random_shuffle.backend_type.result[0]
+#       bucket = "terraform-${random_pet.component.id}-state"
+#     }
+#   )
+# }
 
 output "files" {
   value = tolist([
     local_file.main.filename,
-    local_file.backend.filename,
+    # local_file.backend.filename,
   ])
+}
+
+output "component_name" {
+  value = random_pet.component.id
 }
