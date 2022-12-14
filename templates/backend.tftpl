@@ -1,0 +1,23 @@
+terraform {
+%{ if kind == "s3" }
+  backend "s3" {
+    bucket = "${bucket}"
+    key    = "terraform/state"
+    region = "us-west-2"
+  }
+%{ endif }
+%{ if kind == "gcs" }
+  backend "gcs" {
+    bucket  = "${bucket}"
+    prefix  = "terraform/state"
+  }
+%{ endif }
+%{ if kind == "azurerm" }
+  backend "azurerm" {
+    resource_group_name  = "StorageAccount-ResourceGroup"
+    storage_account_name = "storage_account"
+    container_name       = "${bucket}"
+    key                  = "terraform/state"
+  }
+%{ endif }
+}
