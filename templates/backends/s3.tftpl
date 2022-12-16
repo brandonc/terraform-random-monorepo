@@ -1,0 +1,7 @@
+terraform {
+  backend "s3" {
+    bucket = "${options.bucket}"
+    key    = "${options.key}"
+    region = "${options.provider_region}"
+  }
+}
