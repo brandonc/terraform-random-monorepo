@@ -30,8 +30,5 @@ variable "backend_config" {
     }))
   })
 
-  default = {
-    bucket     = "terraform-random-monorepo"
-    key_prefix = "state"
-  }
+  default = {}
 }

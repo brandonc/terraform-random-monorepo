@@ -58,6 +58,7 @@ module "random-monorepo" {
 
   s3_enabled     = true
   gcs_enabled    = true
+  local_enabled  = false
   size           = 4
   backend_config = {
     bucket     = "my-bucket"
@@ -66,26 +67,48 @@ module "random-monorepo" {
       provider_region = "us-west-2" # Must match your provider config region!
     }
     gcs        = {
-      provider-region = "us-west1" # Must match your provider config region!
+      provider_region = "us-west1" # Must match your provider config region!
     }
   }
 }
 ```
 
+### Variables
+
+| Name           | Type   | Default |
+|----------------|--------|---------|
+| local_enabled  | bool   | `true`  |
+| s3_enabled     | bool   | `false` |
+| gcs_enabled    | bool   | `false` |
+| backend_config | object | `{}`    |
+
+If remote backends are enabled, the backend_config variable must have a `bucket` and `key_prefix` set, but also a key for each enabled backend with its specific configuration:
+
+```
+backend_config = {
+  bucket     = "[BUCKET]"
+  key_prefix = "state"
+  s3         = {
+    provider_region = "us-west-2" # Must match your provider config region!
+  }
+  gcs        = {
+    provider_region = "us-west1" # Must match your provider config region!
+  }
+}
+```
+
+
 ### Backend Variations
-
-For each enabled backend, working credentials should be configured in your environment (AWS_PROFILE, GOOGLE_CREDENTIALS, etc). The necessary backing storage will be created and managed by terraform before the initial state files are saved.
-
-Backend configurations presets can be applied using the tfvars files in the config directory (See usage below)
 
 #### Local
 
 By default, only the local backend variation is enabled because it is the only one that does not require configuration.
+Remove this option by setting `local_enabled = false`
 
 #### S3
 
-Configure your CLI environment with the AWS credentials to use (ex: AWS_PROFILE)
+Configure your CLI environment with the AWS credentials to use (ex: AWS_PROFILE). Enable this option by setting `s3_enabled = true` and adding an s3 key to `backend_config` (See usage above)
 
 #### GCS
 
-Configure your CLI environment with the Google credentials to use (ex: GOOGLE_CREDENTIALS)
+Configure your CLI environment with the Google credentials to use (ex: GOOGLE_CREDENTIALS). Enable this option by setting `gcs_enabled = true` and adding a gcs key to `backend_config` (See usage above)

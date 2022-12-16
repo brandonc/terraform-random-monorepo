@@ -13,7 +13,7 @@ module "generate_root_modules" {
   count       = var.size
   source      = "./random_component"
   templatedir = "${path.module}/templates"
-  outputdir   = "${path.module}/_generated"
+  outputdir   = "${path.root}/_generated"
   possible_backends = compact([
     var.s3_enabled ? "s3" : "",
     var.gcs_enabled ? "gcs" : "",

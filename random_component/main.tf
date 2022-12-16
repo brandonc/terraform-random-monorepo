@@ -47,11 +47,6 @@ resource "local_file" "main" {
 
 locals {
   configured_backend = random_shuffle.backend_type.result[0]
-
-  default_opts = {
-    bucket          = var.backend_config.bucket
-    key             = "${var.backend_config.key_prefix}-${random_pet.component.id}"
-  }
 }
 
 // Generates backend.tf from template
@@ -62,7 +57,10 @@ resource "local_file" "backend" {
     {
       options = merge(
         contains(keys(var.backend_config), local.configured_backend) ? var.backend_config[local.configured_backend] : {},
-        local.default_opts
+        {
+          bucket          = var.backend_config.bucket,
+          key             = "${var.backend_config.key_prefix != null ? var.backend_config.key_prefix : "dummy"}-${random_pet.component.id}"
+        },
       )
     }
   )
